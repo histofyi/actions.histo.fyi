@@ -42,9 +42,12 @@ def hello_world():
         'url' : 'str',
         'version': '0.1'
     }
-    action = Action(**variables)
-    data, success, errors = innodbProvider(aws_region).put(innodb_table, action.as_dict())
-    logging.warn(data)
-    logging.warn(success)
-    logging.warn(errors)
-    return action.as_dict()
+    action_dict, success, errors = Action(variables).as_dict()
+    if success:
+        payload, persist_success, persist_errors = innodbProvider(aws_region).put(innodb_table, action_dict)
+    return {
+        'payload': action_dict,
+        'success': success,
+        'errors': errors, 
+        'persisted': persist_success
+    }
