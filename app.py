@@ -8,7 +8,7 @@ import random
 from providers import innodbProvider
 
 
-from models import Action
+from models import Action, ActionModel
 
 app = Flask(__name__)
 app.config.from_file('config.toml', toml.load)
@@ -42,12 +42,12 @@ def hello_world():
         'url' : 'str',
         'version': '0.1'
     }
-    action_dict, success, errors = Action(variables).as_dict()
-    if success:
-        payload, persist_success, persist_errors = innodbProvider(aws_region).put(innodb_table, action_dict)
+    action = Action(variables)
+    if not action.has_errors():
+        payload, success, errors = innodbProvider(aws_region).put(innodb_table, action.as_dict())
     return {
-        'payload': action_dict,
+        'action': action.as_dict(),
         'success': success,
         'errors': errors, 
-        'persisted': persist_success
+        'schema':action.as_schema()
     }

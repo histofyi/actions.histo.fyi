@@ -33,23 +33,33 @@ class Action():
     __ActionModel = None
 
     def __init__(self, variables):
-        self.variables = variables
-        self.errors = None
+        self.__variables = variables
+        self.__errors = None
         try:
-            self.__ActionModel = ActionModel(**self.variables)
+            self.__ActionModel = ActionModel(**variables)
         except ValidationError as e:
-            self.errors = e.json()
+            self.__errors = e.json()
+
+    def has_errors(self):
+        if self.__errors:
+            return self.__errors
+        else:
+            return False
 
 
     def as_json(self):
-        if self.errors:
-            return None, False, self.errors
+        if self.__errors:
+            return None
         else:
-            return json.dumps(self.__ActionModel.dict()), True, None
+            return json.dumps(self.__ActionModel.dict())
 
 
     def as_dict(self):
-        if self.errors:
-            return None, False, self.errors
+        if self.__errors:
+            return None
         else:
-            return self.__ActionModel.dict(), True, None
+            return self.__ActionModel.dict()
+
+
+    def as_schema(self):
+        return ActionModel.schema()
