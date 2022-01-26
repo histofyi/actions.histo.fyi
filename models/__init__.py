@@ -6,12 +6,6 @@ import json
 import logging
 
 
-
-
-
-
-
-
 class ActionModel(BaseModel):
     identifier : str
     actionStatus : str  
